@@ -17,6 +17,7 @@ type ContactRepository interface {
 	update(*Contact) (Contact, error)
 	convert(*Contact, *User) (User, error)
 	delete(id string) (Contact, error)
+	permanentDelete(id string) (Contact, error)
 }
 
 // ContactAPI implements ContactRepository
@@ -49,14 +50,14 @@ func (api ContactAPI) list(params contactListParams) (ContactList, error) {
 }
 
 func (api ContactAPI) scroll(scrollParam string) (ContactList, error) {
-       contactList := ContactList{}
-       params := scrollParams{ ScrollParam: scrollParam }
-       data, err := api.httpClient.Get("/contacts/scroll", params)
-       if err != nil {
-               return contactList, err
-       }
-       err = json.Unmarshal(data, &contactList)
-       return contactList, err
+	contactList := ContactList{}
+	params := scrollParams{ScrollParam: scrollParam}
+	data, err := api.httpClient.Get("/contacts/scroll", params)
+	if err != nil {
+		return contactList, err
+	}
+	err = json.Unmarshal(data, &contactList)
+	return contactList, err
 }
 
 func (api ContactAPI) create(contact *Contact) (Contact, error) {
@@ -82,6 +83,16 @@ func (api ContactAPI) convert(contact *Contact, user *User) (User, error) {
 func (api ContactAPI) delete(id string) (Contact, error) {
 	contact := Contact{}
 	data, err := api.httpClient.Delete(fmt.Sprintf("/contacts/%s", id), nil)
+	if err != nil {
+		return contact, err
+	}
+	err = json.Unmarshal(data, &contact)
+	return contact, err
+}
+
+func (api ContactAPI) permanentDelete(id string) (Contact, error) {
+	contact := Contact{}
+	data, err := api.httpClient.Post(fmt.Sprintf("/user_delete_requests/%s", id), nil)
 	if err != nil {
 		return contact, err
 	}
