@@ -108,11 +108,31 @@ func (api UserAPI) delete(id string) (User, error) {
 
 func (api UserAPI) permanentlyDelete(id string) (User, error) {
 	user := User{}
+	contact := Contact{}
 
-	data, err := api.httpClient.Post(fmt.Sprintf("/user_delete_requests/%s", id), nil)
+	data, err := api.httpClient.Delete(fmt.Sprintf("/contacts/%s", id), nil)
 	if err != nil {
 		return user, err
 	}
-	err = json.Unmarshal(data, &user)
+	err = json.Unmarshal(data, &contact)
+	if err != nil {
+		return user, err
+	}
+
+	user.Email = contact.Email
+	user.ID = contact.ID
+	user.UserID = contact.UserID
+	user.Avatar = contact.Avatar
+	user.Companies = contact.Companies
+	user.CreatedAt = contact.CreatedAt
+	user.CustomAttributes = contact.CustomAttributes
+	user.LastRequestAt = contact.LastRequestAt
+	user.LastSeenIP = contact.LastSeenIP
+	user.LocationData = contact.LocationData
+	user.Name = contact.Name
+	user.Tags = contact.Tags
+	user.UnsubscribedFromEmails = contact.UnsubscribedFromEmails
+	user.UpdatedAt = contact.UpdatedAt
+
 	return user, err
 }
