@@ -9,8 +9,8 @@ type ContactService struct {
 
 // ContactList holds a list of Contacts and paging information
 type ContactList struct {
-	Pages    PageParams
-	Contacts []Contact
+	Pages       PageParams
+	Contacts    []Contact
 	ScrollParam string `json:"scroll_param,omitempty"`
 }
 
@@ -67,9 +67,9 @@ func (c *ContactService) List(params PageParams) (ContactList, error) {
 	return c.Repository.list(contactListParams{PageParams: params})
 }
 
-// List all Contacts for App via Scroll API
+// Scroll lists all Contacts for App via Scroll API
 func (c *ContactService) Scroll(scrollParam string) (ContactList, error) {
-       return c.Repository.scroll(scrollParam)
+	return c.Repository.scroll(scrollParam)
 }
 
 // ListByEmail looks up a list of Contacts by their Email.
@@ -77,12 +77,12 @@ func (c *ContactService) ListByEmail(email string, params PageParams) (ContactLi
 	return c.Repository.list(contactListParams{PageParams: params, Email: email})
 }
 
-// List Contacts by Segment.
+// ListBySegment lists Contacts by Segment.
 func (c *ContactService) ListBySegment(segmentID string, params PageParams) (ContactList, error) {
 	return c.Repository.list(contactListParams{PageParams: params, SegmentID: segmentID})
 }
 
-// List Contacts By Tag.
+// ListByTag lists Contacts By Tag.
 func (c *ContactService) ListByTag(tagID string, params PageParams) (ContactList, error) {
 	return c.Repository.list(contactListParams{PageParams: params, TagID: tagID})
 }
@@ -107,7 +107,12 @@ func (c *ContactService) Delete(contact *Contact) (Contact, error) {
 	return c.Repository.delete(contact.ID)
 }
 
-// Get the address for a Contact in order to message them
+// PermanentlyDelete Contact Permanently
+func (c *ContactService) PermanentlyDelete(contact *Contact) (Contact, error) {
+	return c.Repository.permanentDelete(contact.ID)
+}
+
+// MessageAddress get the address for a Contact in order to message them
 func (c Contact) MessageAddress() MessageAddress {
 	return MessageAddress{
 		Type:   "contact",
