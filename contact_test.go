@@ -121,7 +121,3 @@ func (t TestContactAPI) convert(c *Contact, u *User) (User, error) {
 func (t TestContactAPI) delete(id string) (Contact, error) {
 	return Contact{ID: id}, nil
 }
-
-func (t TestContactAPI) permanentDelete(id string) (Contact, error) {
-	return Contact{ID: id}, nil
-}

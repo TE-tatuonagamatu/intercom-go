@@ -93,3 +93,10 @@ func (t TestUserAPI) delete(id string) (User, error) {
 	}
 	return User{}, nil
 }
+
+func (t TestUserAPI) permanentlyDelete(id string) (User, error) {
+	if id != "46adad3f09126dca" {
+		t.t.Errorf("id was %s, expected 46adad3f09126dca", id)
+	}
+	return User{}, nil
+}

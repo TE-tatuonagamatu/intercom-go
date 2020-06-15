@@ -107,11 +107,6 @@ func (c *ContactService) Delete(contact *Contact) (Contact, error) {
 	return c.Repository.delete(contact.ID)
 }
 
-// PermanentlyDelete Contact Permanently
-func (c *ContactService) PermanentlyDelete(contact *Contact) (Contact, error) {
-	return c.Repository.permanentDelete(contact.ID)
-}
-
 // MessageAddress get the address for a Contact in order to message them
 func (c Contact) MessageAddress() MessageAddress {
 	return MessageAddress{

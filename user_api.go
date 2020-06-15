@@ -15,6 +15,7 @@ type UserRepository interface {
 	scroll(scrollParam string) (UserList, error)
 	save(*User) (User, error)
 	delete(id string) (User, error)
+	permanentlyDelete(id string) (User, error)
 }
 
 // UserAPI implements UserRepository
@@ -23,7 +24,7 @@ type UserAPI struct {
 }
 
 type requestScroll struct {
-	ScrollParam            string                 `json:"scroll_param,omitempty"`
+	ScrollParam string `json:"scroll_param,omitempty"`
 }
 type requestUser struct {
 	ID                     string                 `json:"id,omitempty"`
@@ -31,7 +32,7 @@ type requestUser struct {
 	Phone                  string                 `json:"phone,omitempty"`
 	UserID                 string                 `json:"user_id,omitempty"`
 	Name                   string                 `json:"name,omitempty"`
-        Avatar                 *UserAvatar            `json:"avatar,omitempty"`
+	Avatar                 *UserAvatar            `json:"avatar,omitempty"`
 	SignedUpAt             int64                  `json:"signed_up_at,omitempty"`
 	RemoteCreatedAt        int64                  `json:"remote_created_at,omitempty"`
 	LastRequestAt          int64                  `json:"last_request_at,omitempty"`
@@ -69,17 +70,17 @@ func (api UserAPI) list(params userListParams) (UserList, error) {
 }
 
 func (api UserAPI) scroll(scrollParam string) (UserList, error) {
-       userList := UserList{}
+	userList := UserList{}
 
-       url := "/users/scroll"
-       params := scrollParams{ ScrollParam: scrollParam }
-       data, err := api.httpClient.Get(url, params)
+	url := "/users/scroll"
+	params := scrollParams{ScrollParam: scrollParam}
+	data, err := api.httpClient.Get(url, params)
 
-       if err != nil {
-               return userList, err
-       }
-       err = json.Unmarshal(data, &userList)
-       return userList, err
+	if err != nil {
+		return userList, err
+	}
+	err = json.Unmarshal(data, &userList)
+	return userList, err
 }
 
 func (api UserAPI) save(user *User) (User, error) {
@@ -98,6 +99,17 @@ func unmarshalToUser(data []byte, err error) (User, error) {
 func (api UserAPI) delete(id string) (User, error) {
 	user := User{}
 	data, err := api.httpClient.Delete(fmt.Sprintf("/users/%s", id), nil)
+	if err != nil {
+		return user, err
+	}
+	err = json.Unmarshal(data, &user)
+	return user, err
+}
+
+func (api UserAPI) permanentlyDelete(id string) (User, error) {
+	user := User{}
+
+	data, err := api.httpClient.Post(fmt.Sprintf("/user_delete_requests/%s", id), nil)
 	if err != nil {
 		return user, err
 	}
